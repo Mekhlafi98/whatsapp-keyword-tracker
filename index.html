@@ -1,40 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-gray-100">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Setup Keyword Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Keyword Monitor Setup with Auth0 Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.26/auth0-spa-js.production.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-  <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center text-indigo-600 mb-6">Setup Keyword Monitor</h2>
-    
-    <form action="https://azeez98-solverai1.hf.space/webhook/save-groups" method="POST" class="space-y-4">
-      
-      <div>
-        <label for="user_id" class="block text-sm font-medium text-gray-700">Telegram User ID:</label>
-        <input type="text" id="user_id" name="user_id" required
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
+<body class="h-full flex flex-col items-center justify-center p-4">
 
-      <div>
-        <label for="groups" class="block text-sm font-medium text-gray-700">WhatsApp Groups (comma separated):</label>
-        <input type="text" id="groups" name="groups" placeholder="e.g. Deals Group, News Chat"
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
+  <div id="loading" class="text-gray-500">Loading...</div>
 
-      <div>
-        <label for="keywords" class="block text-sm font-medium text-gray-700">Keywords (comma separated):</label>
-        <input type="text" id="keywords" name="keywords" placeholder="e.g. offer, discount, free"
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
+  <div id="app" class="hidden max-w-md w-full bg-white p-6 rounded shadow-md">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">Setup Keyword Monitor</h1>
+      <button id="btn-logout" class="text-sm text-red-600 hover:underline hidden">Logout</button>
+    </div>
 
-      <button type="submit"
-              class="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-200">
-        Submit
-      </button>
+    <form id="monitor-form" class="space-y-4">
+      <label class="block">
+        <span class="text-gray-700 font-semibold">Telegram User ID:</span>
+        <input type="text" id="telegramUserId" class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter your Telegram User ID" required />
+      </label>
+
+      <label class="block">
+        <span class="text-gray-700 font-semibold">WhatsApp Groups (comma separated):</span>
+        <input type="text" id="whatsappGroups" class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Deals Group, News Chat" required />
+      </label>
+
+      <label class="block">
+        <span class="text-gray-700 font-semibold">Keywords (comma separated):</span>
+        <input type="text" id="keywords" class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="offer, discount, free" required />
+      </label>
+
+      <button type="submit" class="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700">Submit</button>
     </form>
+
+    <div id="statusMessage" class="mt-4 text-center text-sm"></div>
   </div>
+
+  <div id="login-container" class="hidden">
+    <button id="btn-login" class="py-2 px-4 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700">Login</button>
+  </div>
+
+  <script>
+    let auth0 = null;
+
+    const config = {
+      domain: "dev-06ew4agqh34am5jf.us.auth0.com",
+      clientId: "u1BfaaU4UEcvojjdCNgotYJtApOZ6ZOz"
+    };
+
+    async function configureClient() {
+      auth0 = await createAuth0Client({
+        domain: config.domain,
+        client_id: config.clientId,
+        cacheLocation: 'localstorage',
+        useRefreshTokens: true,
+      });
+    }
+
+    async function updateUI() {
+      const isAuthenticated = await auth0.isAuthenticated();
+
+      document.getElementById('loading').style.display = 'none';
+
+      if (isAuthenticated) {
+        // Show form and logout button
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('login-container').classList.add('hidden');
+        document.getElementById('btn-logout').classList.remove('hidden');
+      } else {
+        // Show login button only
+        document.getElementById('app').classList.add('hidden');
+        document.getElementById('login-container').classList.remove('hidden');
+        document.getElementById('btn-logout').classList.add('hidden');
+      }
+    }
+
+    async function handleRedirectCallback() {
+      const query = window.location.search;
+      if (query.includes('code=') && query.includes('state=')) {
+        await auth0.handleRedirectCallback();
+        window.history.replaceState({}, document.title, "/");
+      }
+    }
+
+    window.onload = async () => {
+      await configureClient();
+      await handleRedirectCallback();
+      await updateUI();
+    };
+
+    // Login button
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      await auth0.loginWithRedirect({
+        redirect_uri: window.location.origin,
+      });
+    });
+
+    // Logout button
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      auth0.logout({
+        returnTo: window.location.origin,
+      });
+    });
+
+    // Form submission (example: just showing data in status)
+    document.getElementById('monitor-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const telegramUserId = document.getElementById('telegramUserId').value.trim();
+      const whatsappGroups = document.getElementById('whatsappGroups').value.trim();
+      const keywords = document.getElementById('keywords').value.trim();
+    
+      const payload = {
+        telegramUserId,
+        whatsappGroups,
+        keywords
+      };
+    
+      try {
+        const response = await fetch('https://azeez98-solverai1.hf.space/webhook/save-groups', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+    
+        if (response.ok) {
+          document.getElementById('statusMessage').textContent = "Settings submitted successfully!";
+          e.target.reset();
+        } else {
+          document.getElementById('statusMessage').textContent = "Failed to submit. Please try again.";
+        }
+      } catch (error) {
+        document.getElementById('statusMessage').textContent = "Error submitting form.";
+      }
+    });
+
+  </script>
 </body>
 </html>
