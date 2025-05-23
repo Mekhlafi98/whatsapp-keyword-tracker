@@ -3,21 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Monitor WhatsApp Groups</title>
+  <title>Setup Keyword Monitor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h2>Setup Keyword Monitor</h2>
-  <form action="https://azeez98-solverai1.hf.space/webhook/save-groups" method="POST">
-    <label for="user_id">Telegram User ID:</label><br>
-    <input type="text" id="user_id" name="user_id" required><br><br>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-indigo-600 mb-6">Setup Keyword Monitor</h2>
+    
+    <form action="https://azeez98-solverai1.hf.space/webhook/save-groups" method="POST" class="space-y-4">
+      
+      <div>
+        <label for="user_id" class="block text-sm font-medium text-gray-700">Telegram User ID:</label>
+        <input type="text" id="user_id" name="user_id" required
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+      </div>
 
-    <label for="groups">WhatsApp Groups (comma separated):</label><br>
-    <input type="text" id="groups" name="groups" placeholder="e.g. Deals Group, News Chat"><br><br>
+      <div>
+        <label for="groups" class="block text-sm font-medium text-gray-700">WhatsApp Groups (comma separated):</label>
+        <input type="text" id="groups" name="groups" placeholder="e.g. Deals Group, News Chat"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+      </div>
 
-    <label for="keywords">Keywords (comma separated):</label><br>
-    <input type="text" id="keywords" name="keywords" placeholder="e.g. offer, discount, free"><br><br>
+      <div>
+        <label for="keywords" class="block text-sm font-medium text-gray-700">Keywords (comma separated):</label>
+        <input type="text" id="keywords" name="keywords" placeholder="e.g. offer, discount, free"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+      </div>
 
-    <button type="submit">Submit</button>
-  </form>
+      <button type="submit"
+              class="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-200">
+        Submit
+      </button>
+    </form>
+  </div>
 </body>
 </html>
