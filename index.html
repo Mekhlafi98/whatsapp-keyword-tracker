@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Monitor WhatsApp Groups</title>
+</head>
+<body>
+  <h2>Setup Keyword Monitor</h2>
+  <form action="https://azeez98-solverai1.hf.space/webhook/save-groups" method="POST">
+    <label for="user_id">Telegram User ID:</label><br>
+    <input type="text" id="user_id" name="user_id" required><br><br>
+
+    <label for="groups">WhatsApp Groups (comma separated):</label><br>
+    <input type="text" id="groups" name="groups" placeholder="e.g. Deals Group, News Chat"><br><br>
+
+    <label for="keywords">Keywords (comma separated):</label><br>
+    <input type="text" id="keywords" name="keywords" placeholder="e.g. offer, discount, free"><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
